@@ -24,9 +24,9 @@ jobs:
 
       - name: Create Storage Account (if not exists)
         run: |
-          if ! az storage account show --name cvstorageadnan --resource-group cv-rg > /dev/null 2>&1; then
+          if ! az storage account show --name cvazurecv001 --resource-group cv-rg > /dev/null 2>&1; then
             az storage account create \
-              --name cvstorageadnan \
+              --name cvazurecv001 \
               --resource-group cv-rg \
               --location eastus \
               --sku Standard_LRS \
@@ -36,7 +36,7 @@ jobs:
       - name: Enable Static Website
         run: |
           az storage blob service-properties update \
-            --account-name cvstorageadnan \
+            --account-name cvazurecv001 \
             --static-website \
             --index-document index.html \
             --404-document index.html
@@ -44,7 +44,7 @@ jobs:
       - name: Upload Files
         run: |
           az storage blob upload-batch \
-            --account-name cvstorageadnan \
+            --account-name cvazurecv001 \
             --source . \
             --destination '$web' \
             --overwrite
@@ -52,6 +52,6 @@ jobs:
       - name: Show Website URL
         run: |
           az storage account show \
-            --name cvstorageadnan \
+            --name cvazurecv001 \
             --query "primaryEndpoints.web" \
             --output tsv
