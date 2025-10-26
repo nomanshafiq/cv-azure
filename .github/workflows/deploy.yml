@@ -1,0 +1,57 @@
+name: Deploy CV Website to Azure Blob
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create Resource Group
+        run: |
+          az group create --name cv-rg --location eastus
+
+      - name: Create Storage Account (if not exists)
+        run: |
+          if ! az storage account show --name cvstorageadnan --resource-group cv-rg > /dev/null 2>&1; then
+            az storage account create \
+              --name cvstorageadnan \
+              --resource-group cv-rg \
+              --location eastus \
+              --sku Standard_LRS \
+              --kind StorageV2
+          fi
+
+      - name: Enable Static Website
+        run: |
+          az storage blob service-properties update \
+            --account-name cvstorageadnan \
+            --static-website \
+            --index-document index.html \
+            --404-document index.html
+
+      - name: Upload Files
+        run: |
+          az storage blob upload-batch \
+            --account-name cvstorageadnan \
+            --source . \
+            --destination '$web' \
+            --overwrite
+
+      - name: Show Website URL
+        run: |
+          az storage account show \
+            --name cvstorageadnan \
+            --query "primaryEndpoints.web" \
+            --output tsv
