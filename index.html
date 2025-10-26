@@ -172,18 +172,7 @@
     <div id="visitor-counter">Loading visitor count...</div>
   </div>
 
-  <script>
-    // Global visitor counter using CountAPI
-    fetch("https://api.countapi.xyz/hit/noman-cv/visits")
-      .then((res) => res.json())
-      .then((data) => {
-        document.getElementById("visitor-counter").innerText =
-          "👥 Total Visitors: " + data.value;
-      })
-      .catch(() => {
-        document.getElementById("visitor-counter").innerText =
-          "⚠️ Unable to load visitor count.";
-      });
-  </script>
+
 </body>
 </html>
+
